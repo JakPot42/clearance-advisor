@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Security Clearance Readiness Advisor{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="site-title">Security Clearance Readiness Advisor</a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+        <a href="/guidelines">Guidelines</a>
+        <a href="/session/new">New Session</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="disclaimer-bar">
+    <div class="container">
+      <strong>Educational Tool Only</strong> — This tool explains publicly available
+      adjudicative guidelines. It does NOT predict whether you will receive a clearance.
+      Not legal advice. Clearance decisions are made by trained adjudicators using
+      the Whole Person Concept.
+    </div>
+  </div>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        Content sourced from publicly available government documents:
+        <strong>SEAD 4</strong> and the
+        <strong>Adjudicative Desk Reference (ADR)</strong> published by DCSA.
+        This tool is for educational purposes only and does not constitute legal advice.
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

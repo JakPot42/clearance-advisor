@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Security Clearance Readiness Advisor{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <h1>Security Clearance Readiness Advisor</h1>
+  <p class="hero-sub">
+    Understand the 13 adjudicative guidelines from the public
+    <em>Adjudicative Desk Reference</em> — and prepare for your Subject Interview.
+  </p>
+  <div class="hero-actions">
+    <a href="/session/new" class="btn btn-primary">Start a New Session</a>
+    <a href="/guidelines" class="btn btn-secondary">Browse the 13 Guidelines</a>
+  </div>
+</div>
+
+<div class="callout callout-info">
+  <strong>How this works:</strong>
+  Select which adjudicative guidelines you want to understand. Claude explains what each
+  guideline covers, what adjudicators are trained to evaluate, and what the ADR says about
+  mitigating factors — all in plain language. Then generate a Subject Interview preparation
+  guide for your selected guidelines. This tool never predicts whether you will receive a
+  clearance. That decision belongs to trained adjudicators.
+</div>
+
+{% if sessions %}
+<section>
+  <h2>Your Sessions</h2>
+  <div class="sessions-grid">
+    {% for s in sessions %}
+    <div class="session-card {% if s.is_demo %}session-demo{% endif %}">
+      <div class="session-card-header">
+        <span class="clearance-badge clearance-{{ s.clearance_level | replace('/', '') | replace(' ', '-') | lower }}">
+          {{ s.clearance_level }}
+        </span>
+        {% if s.is_demo %}
+        <span class="demo-badge">DEMO</span>
+        {% endif %}
+      </div>
+      <h3 class="session-name">{{ s.session_name }}</h3>
+      {% set codes = s.guidelines_selected | fromjson %}
+      <p class="session-guidelines">
+        Guidelines: {% for c in codes %}<span class="code-chip">{{ c }}</span>{% endfor %}
+      </p>
+      {% if s.interview_prep %}
+      <p class="session-meta has-prep">✓ Interview prep generated</p>
+      {% endif %}
+      <div class="session-actions">
+        <a href="/session/{{ s.id }}" class="btn btn-sm btn-primary">View Session</a>
+        <a href="/session/{{ s.id }}/report" class="btn btn-sm btn-secondary">Print Report</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="guidelines-preview">
+  <h2>The 13 Adjudicative Guidelines</h2>
+  <p>
+    Security clearance adjudicators are trained to evaluate applicants against
+    thirteen adjudicative guidelines established in
+    <strong>Security Executive Agent Directive 4 (SEAD 4)</strong>.
+    No single guideline automatically disqualifies an applicant — adjudicators
+    apply the <strong>Whole Person Concept</strong>, weighing context, recency,
+    frequency, and demonstrated rehabilitation.
+  </p>
+  <div class="guidelines-grid">
+    {% for g in guidelines %}
+    <a href="/guidelines/{{ g.code }}" class="guideline-tile">
+      <span class="guideline-code">{{ g.code }}</span>
+      <span class="guideline-name">{{ g.name }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  <p class="text-center">
+    <a href="/guidelines" class="btn btn-secondary">View Full Guideline Details</a>
+  </p>
+</section>
+{% endblock %}

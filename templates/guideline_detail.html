@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Guideline {{ guideline.code }} — {{ guideline.name }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="/guidelines">← All Guidelines</a>
+</nav>
+
+<div class="guideline-header">
+  <span class="guideline-code-large">{{ guideline.code }}</span>
+  <div>
+    <h1>{{ guideline.name }}</h1>
+    <p class="guideline-short">{{ guideline.short }}</p>
+  </div>
+</div>
+
+<div class="callout callout-info">
+  <strong>Remember:</strong> This page describes what adjudicators are trained to evaluate
+  under this guideline. Nothing here predicts your outcome. Adjudicators apply the
+  Whole Person Concept — context, recency, and demonstrated rehabilitation all matter.
+</div>
+
+<section class="detail-section">
+  <h2>What This Guideline Covers</h2>
+  <p>{{ guideline.what_it_covers }}</p>
+</section>
+
+<section class="detail-section">
+  <h2>Concerns Adjudicators Are Trained to Evaluate</h2>
+  <ul class="concern-list">
+    {% for c in guideline.concerns %}
+    <li>{{ c }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<div class="two-col-grid">
+  <section class="detail-section">
+    <h2>Potentially Disqualifying Conditions</h2>
+    <p class="section-note">
+      These are conditions the ADR identifies as potentially disqualifying —
+      not an automatic bar. Context always matters.
+    </p>
+    <ul class="disqualifying-list">
+      {% for d in guideline.disqualifying %}
+      <li>{{ d }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="detail-section">
+    <h2>Mitigating Conditions</h2>
+    <p class="section-note">
+      These are conditions the ADR identifies as potentially mitigating —
+      factors that reduce concern.
+    </p>
+    <ul class="mitigating-list">
+      {% for m in guideline.mitigating %}
+      <li>{{ m }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+<section class="detail-section">
+  <h2>Topics Investigators May Explore in a Subject Interview</h2>
+  <ul class="interview-list">
+    {% for t in guideline.interview_topics %}
+    <li>{{ t }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<div class="detail-source">
+  <strong>Source:</strong> {{ guideline.adr_section }},
+  Adjudicative Desk Reference (ADR), DCSA. Content is drawn from publicly available
+  government documents only.
+</div>
+
+<div class="text-center mt-2">
+  <a href="/session/new" class="btn btn-primary">
+    Get a Plain-Language Briefing on This Guideline
+  </a>
+</div>
+{% endblock %}

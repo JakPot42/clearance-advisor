@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}{{ session.session_name }} — Security Clearance Readiness Advisor{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb">
+  <a href="/">← All Sessions</a>
+</nav>
+
+<div class="session-header">
+  <div>
+    <h1>{{ session.session_name }}</h1>
+    <span class="clearance-badge clearance-{{ session.clearance_level | replace('/', '') | replace(' ', '-') | lower }}">
+      {{ session.clearance_level }}
+    </span>
+    {% if session.is_demo %}
+    <span class="demo-badge">DEMO SESSION</span>
+    {% endif %}
+  </div>
+  <div class="session-header-actions">
+    <a href="/session/{{ session.id }}/report" class="btn btn-secondary">Print Report</a>
+  </div>
+</div>
+
+{% if session.context_notes %}
+<div class="callout callout-neutral">
+  <strong>Context Notes:</strong> {{ session.context_notes }}
+</div>
+{% endif %}
+
+<div class="callout callout-warning">
+  <strong>Remember:</strong> These briefings explain what adjudicators are trained to
+  evaluate under each guideline. They do not predict whether you will receive a clearance.
+  Clearance decisions are made by trained adjudicators applying the Whole Person Concept.
+  This is not legal advice.
+</div>
+
+<!-- Guideline Briefings -->
+<section>
+  <h2>Plain-Language Guideline Briefings</h2>
+  {% for g in guidelines_data %}
+  <div class="briefing-card">
+    <div class="briefing-card-header">
+      <span class="guideline-code">{{ g.code }}</span>
+      <h3>{{ g.name }}</h3>
+      <a href="/guidelines/{{ g.code }}" class="btn btn-xs btn-secondary">
+        Full Guideline Details
+      </a>
+    </div>
+    <div class="briefing-body">
+      {% if briefings[g.code] %}
+        {% set text = briefings[g.code] %}
+        {% for line in text.split('\n') %}
+          {% if line.startswith('**') and line.endswith('**') %}
+            {# skip redundant header lines already shown in card header #}
+          {% elif line.strip() == '' %}
+            <br />
+          {% else %}
+            <p>{{ line }}</p>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p class="text-muted">No briefing available for this guideline.</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<!-- Interview Prep -->
+<section class="interview-prep-section">
+  <h2>Subject Interview Preparation</h2>
+  {% if has_interview_prep %}
+  <div class="interview-prep-body">
+    {% for line in session.interview_prep.split('\n') %}
+      {% if line.startswith('# ') %}
+        {# already have h2 above, skip top-level header #}
+      {% elif line.startswith('## ') %}
+        <h3>{{ line[3:] }}</h3>
+      {% elif line.startswith('- ') %}
+        <li>{{ line[2:] }}</li>
+      {% elif line.startswith('**') %}
+        <p><strong>{{ line.strip('*') }}</strong></p>
+      {% elif line.strip() == '---' %}
+        <hr />
+      {% elif line.strip() == '' %}
+        <br />
+      {% else %}
+        <p>{{ line }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="callout callout-neutral">
+    <p>
+      Generate a Subject Interview preparation guide tailored to your selected
+      guidelines. The guide will explain what a Subject Interview is, list the
+      types of questions investigators are trained to ask for each guideline,
+      and offer practical advice for being forthright and complete.
+    </p>
+    <form method="post" action="/session/{{ session.id }}/interview-prep">
+      {% if demo_mode %}
+      <p class="text-muted">
+        <em>Demo mode: guide will be a placeholder. Set ANTHROPIC_API_KEY for live generation.</em>
+      </p>
+      {% endif %}
+      <button type="submit" class="btn btn-primary">Generate Interview Prep Guide</button>
+    </form>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

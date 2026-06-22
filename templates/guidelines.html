@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}The 13 Adjudicative Guidelines — Security Clearance Readiness Advisor{% endblock %}
+
+{% block content %}
+<h1>The 13 Adjudicative Guidelines</h1>
+
+<div class="callout callout-info">
+  <strong>Source:</strong> Security Executive Agent Directive 4 (SEAD 4), effective
+  June 8, 2017. Content is drawn from the
+  <em>Adjudicative Desk Reference (ADR)</em> published by the Defense
+  Counterintelligence and Security Agency (DCSA), available at
+  <strong>public.dcsa.mil</strong>.
+</div>
+
+<div class="callout callout-warning">
+  {{ process_note }}
+</div>
+
+<div class="guidelines-list">
+  {% for g in guidelines %}
+  <div class="guideline-row">
+    <div class="guideline-row-code">{{ g.code }}</div>
+    <div class="guideline-row-body">
+      <h3><a href="/guidelines/{{ g.code }}">{{ g.name }}</a></h3>
+      <p>{{ g.short }}</p>
+    </div>
+    <div class="guideline-row-action">
+      <a href="/guidelines/{{ g.code }}" class="btn btn-sm btn-secondary">Details</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="text-center mt-2">
+  <a href="/session/new" class="btn btn-primary">Start a Session to Get Plain-Language Briefings</a>
+</div>
+{% endblock %}

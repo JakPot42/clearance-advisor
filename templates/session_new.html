@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}New Session — Security Clearance Readiness Advisor{% endblock %}
+
+{% block content %}
+<h1>Start a New Session</h1>
+
+<p>
+  Select which adjudicative guidelines you want to understand, and Claude will
+  explain each one in plain language — what it covers, what adjudicators are
+  trained to evaluate, and what mitigating factors the ADR describes.
+</p>
+
+{% if demo_mode %}
+<div class="callout callout-warning">
+  <strong>Demo Mode:</strong> Briefings are pre-generated placeholders.
+  To get real Claude-generated briefings, set <code>ANTHROPIC_API_KEY</code>
+  and <code>DEMO_MODE=False</code>. The three demo sessions on the home page
+  show what full briefings look like.
+</div>
+{% endif %}
+
+<form method="post" action="/session/new">
+  <div class="form-group">
+    <label for="session_name">Session Name</label>
+    <input
+      type="text"
+      id="session_name"
+      name="session_name"
+      placeholder="e.g., My SECRET Application — Financial Issues"
+      required
+      maxlength="200"
+    />
+    <small>A name to help you find this session later.</small>
+  </div>
+
+  <div class="form-group">
+    <label for="clearance_level">Clearance Level</label>
+    <select id="clearance_level" name="clearance_level" required>
+      {% for level in clearance_levels %}
+      <option value="{{ level }}">{{ level }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Select Guidelines to Understand (choose all that apply)</label>
+    <small>
+      You don't have to select every guideline — focus on the ones most relevant
+      to your situation or concerns.
+    </small>
+    <div class="guideline-checkboxes">
+      {% for g in guidelines %}
+      <label class="checkbox-label">
+        <input type="checkbox" name="guidelines_selected" value="{{ g.code }}" />
+        <span class="checkbox-code">{{ g.code }}</span>
+        <span class="checkbox-text">
+          <strong>{{ g.name }}</strong>
+          <small>{{ g.short }}</small>
+        </span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="context_notes">Optional Context Notes</label>
+    <textarea
+      id="context_notes"
+      name="context_notes"
+      rows="4"
+      placeholder="Optional: briefly describe your situation or specific questions. E.g., 'I have student loan debt in default' or 'I have family members in China.' This context helps Claude tailor the explanation."
+    ></textarea>
+    <small>
+      Do not include Social Security numbers, classified information, or other
+      sensitive identifying details. This is an educational tool.
+    </small>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Generate Briefings</button>
+    <a href="/" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ session.session_name }} — Clearance Readiness Report</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #222; }
+    h1 { font-size: 1.6rem; border-bottom: 2px solid #333; padding-bottom: 8px; }
+    h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+    h3 { font-size: 1rem; margin-top: 1.5rem; }
+    .meta { font-size: 0.9rem; color: #555; margin-bottom: 1.5rem; }
+    .disclaimer-box {
+      border: 1px solid #333; padding: 12px 16px; margin: 1.5rem 0;
+      font-size: 0.85rem; background: #f9f9f9;
+    }
+    .guideline-section { margin-top: 2rem; page-break-inside: avoid; }
+    .guideline-label { font-weight: bold; font-size: 1.1rem; }
+    .briefing-text p { margin: 0.6rem 0; line-height: 1.6; }
+    .interview-section { margin-top: 2rem; }
+    .interview-text p { margin: 0.6rem 0; line-height: 1.6; }
+    .interview-text h3 { font-size: 1rem; font-weight: bold; margin-top: 1.2rem; }
+    .interview-text li { margin: 0.3rem 0; line-height: 1.5; }
+    hr { border: none; border-top: 1px solid #ccc; margin: 1.5rem 0; }
+    .footer-note { font-size: 0.8rem; color: #666; margin-top: 3rem; border-top: 1px solid #ccc; padding-top: 12px; }
+    @media print {
+      body { margin: 20px; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom:20px">
+    <a href="/session/{{ session.id }}">← Back to Session</a> &nbsp;|&nbsp;
+    <button onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <h1>Security Clearance Readiness Report</h1>
+  <div class="meta">
+    <strong>Session:</strong> {{ session.session_name }}<br />
+    <strong>Clearance Level:</strong> {{ session.clearance_level }}<br />
+    <strong>Generated:</strong> {{ session.created_at.strftime('%B %d, %Y') if session.created_at else 'N/A' }}<br />
+    <strong>Guidelines Covered:</strong> {{ codes | join(', ') }}
+  </div>
+
+  <div class="disclaimer-box">
+    <strong>IMPORTANT — Educational Tool Only</strong><br />
+    {{ disclaimer }}<br /><br />
+    This report is NOT a security determination, NOT a prediction of clearance outcome,
+    and NOT legal advice. All content is sourced from publicly available government
+    documents: SEAD 4 and the Adjudicative Desk Reference (ADR) published by DCSA.
+  </div>
+
+  <!-- Guideline Briefings -->
+  <h2>Plain-Language Guideline Briefings</h2>
+
+  {% for g in guidelines_data %}
+  <div class="guideline-section">
+    <div class="guideline-label">Guideline {{ g.code }} — {{ g.name }}</div>
+    <div class="briefing-text">
+      {% if briefings[g.code] %}
+        {% for line in briefings[g.code].split('\n') %}
+          {% if line.startswith('**') %}
+            {# skip bold headers — label already shown above #}
+          {% elif line.strip() %}
+            <p>{{ line }}</p>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p><em>No briefing available.</em></p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Interview Prep -->
+  {% if session.interview_prep %}
+  <div class="interview-section">
+    <h2>Subject Interview Preparation Guide</h2>
+    <div class="interview-text">
+      {% for line in session.interview_prep.split('\n') %}
+        {% if line.startswith('# ') %}
+          {# skip top-level header #}
+        {% elif line.startswith('## ') %}
+          <h3>{{ line[3:] }}</h3>
+        {% elif line.startswith('- ') %}
+          <li>{{ line[2:] }}</li>
+        {% elif line.startswith('**') %}
+          <p><strong>{{ line.strip('*') }}</strong></p>
+        {% elif line.strip() == '---' %}
+          <hr />
+        {% elif line.strip() %}
+          <p>{{ line }}</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="footer-note">
+    Security Clearance Readiness Advisor — Educational tool only.<br />
+    Source: SEAD 4 and the Adjudicative Desk Reference (ADR), Defense Counterintelligence
+    and Security Agency (DCSA). This is not legal advice. Consult a security clearance
+    attorney for guidance specific to your situation.
+  </div>
+</body>
+</html>
