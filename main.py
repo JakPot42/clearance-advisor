@@ -112,6 +112,8 @@ async def session_new_form(request: Request):
     )
 
 
+_MAX_CONTEXT_CHARS = 2_000
+
 @app.post("/session/new")
 async def session_new_submit(
     request: Request,
@@ -123,6 +125,12 @@ async def session_new_submit(
 ):
     if clearance_level not in CLEARANCE_LEVELS:
         raise HTTPException(status_code=400, detail="Invalid clearance level")
+
+    if len(context_notes) > _MAX_CONTEXT_CHARS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Context notes too long ({len(context_notes):,} chars). Maximum is {_MAX_CONTEXT_CHARS:,} characters."
+        )
 
     valid_codes = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"}
     codes = [c for c in guidelines_selected if c in valid_codes]
